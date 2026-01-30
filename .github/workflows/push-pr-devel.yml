@@ -15,19 +15,9 @@ concurrency:
 
 jobs:
   build-server:
-    uses: dbeaver/dbeaver-common/.github/workflows/mvn-package.yml@devel
-    name: Check
+    name: Server
+    uses: ./.github/workflows/backend-build.yml
     secrets: inherit
-    with:
-      mvn-args: -Dplain-api-server -Dheadless-platform
-      project-directory: ./cloudbeaver/server/product/aggregate
-      project-deps: ./cloudbeaver/project.deps
-      timeout-minutes: 5
-
-  # build-server:
-  #   name: Server
-  #   uses: ./.github/workflows/backend-build.yml
-  #   secrets: inherit
 
   build-frontend:
     name: Frontend
@@ -58,7 +48,7 @@ jobs:
   #       if: ${{ needs.call-frontend-build.outputs.test-status == 'success' }}
   #       run: echo "Tests passed"
 
-  # call-docker-build-and-push:
-  #   name: Run
-  #   needs: [call-backend-build, call-frontend-build]
-  #   uses: ./.github/workflows/docker-build-and-push.yml
+  call-docker-build-and-push:
+    name: Run
+    needs: [build-server, build-frontend]
+    uses: ./.github/workflows/docker-build-and-push.yml
